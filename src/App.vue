@@ -6,12 +6,12 @@
       <img v-else src="./assets/bg-desktop-dark.jpg" alt="" />
     </div>
     <!-- <router-view /> -->
-    <homeV @-handel-theme="upTheme" />
+    <todoList @-handel-theme="upTheme" />
   </main>
 </template>
 
 <script setup>
-import homeV from "./views/HomeView.vue";
+import todoList from "./views/TodoList.vue";
 
 import { ref, onMounted } from "vue";
 
