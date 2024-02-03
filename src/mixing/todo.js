@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount } from "vue";
 
 const handelTodos = () => {
   // Data
@@ -33,17 +33,20 @@ const handelTodos = () => {
 
   // Update Theme
   const getTheme = () => {
-    if (localStorage.getItem("theme"))
+    if (localStorage.getItem("theme")) {
       document.documentElement.setAttribute(
         "data-theme",
         localStorage.getItem("theme")
       );
-    isDarkTheme.value = localStorage.getItem("theme");
+      if (localStorage.getItem("theme") === "dark") {
+        val.value = true;
+      }
+      isDarkTheme.value = localStorage.getItem("theme");
+    }
   };
 
   onMounted(() => {
     updateTodo();
-
     getTheme();
   });
 

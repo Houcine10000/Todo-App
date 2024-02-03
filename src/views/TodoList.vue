@@ -65,7 +65,7 @@
                 >
                   <div class="d-flex align-center py-3">
                     <input
-                      @click="fertigTodo(todo)"
+                      @click="endTodo(todo)"
                       :checked="todo.status"
                       type="checkbox"
                       style="width: 20px; height: 20px"
@@ -84,7 +84,7 @@
 
                   <v-icon
                     style="color: var(--color-ttl)"
-                    @click="deleteTodo(index)"
+                    @click="deleteTodo(todo.id)"
                     >mdi-close</v-icon
                   >
                 </div>
@@ -157,6 +157,8 @@ const { todosArr, addToLocalSt, isDarkTheme, updateTheme } = todoList();
 
 const radioFilter = ref("");
 
+// |-----> Emit <-----|
+
 const Emit = defineEmits(["HandelTheme"]);
 
 const share = () => {
@@ -164,6 +166,7 @@ const share = () => {
 
   Emit("HandelTheme", isDarkTheme.value);
 };
+
 // |-----> Object <-----|
 
 const todosObj = ref({
@@ -192,15 +195,36 @@ const addTodo = () => {
 };
 
 //--Delete Todo
-const deleteTodo = (index) => {
-  todosArr.value.splice(index, 1);
+const deleteTodo = (element) => {
+  if (radioFilter.value === "Active" || radioFilter.value === "Completed") {
+    filteredItems.value.forEach((ele) => {
+      ele.id === element
+        ? filteredItems.value.splice(filteredItems.value.indexOf(ele), 1)
+        : "";
+    });
+
+    todosArr.value.forEach((ele) => {
+      ele.id === element
+        ? todosArr.value.splice(todosArr.value.indexOf(ele), 1)
+        : "";
+    });
+  } else {
+    todosArr.value.forEach((ele) => {
+      ele.id === element
+        ? todosArr.value.splice(todosArr.value.indexOf(ele), 1)
+        : "";
+    });
+  }
 
   addToLocalSt();
 };
 
 //--Fertig Todo
-const fertigTodo = (todo) => {
-  todo.status = !todo.status;
+const endTodo = (task) => {
+  task.status = !task.status;
+
+  updateFilteredItems();
+
   addToLocalSt();
 };
 
@@ -225,16 +249,20 @@ const updateFilteredItems = () => {
   }
 };
 
-watch([todosArr, radioFilter], updateFilteredItems, { immediate: true });
+watch([todosArr, radioFilter], updateFilteredItems, {
+  immediate: true,
+});
 
 //--Clear Completed
+
 const clear = () => {
   for (let i = 0; i <= todosArr.value.length; i++) {
-    todosArr.value.forEach((el) => {
-      if (el.status === true) {
-        todosArr.value.splice(todosArr.value.indexOf(el), 1);
-      }
-    });
+    todosArr.value.forEach((el) =>
+      el.status === true
+        ? todosArr.value.splice(todosArr.value.indexOf(el), 1)
+        : ""
+    );
+    updateFilteredItems();
     addToLocalSt();
   }
 };
