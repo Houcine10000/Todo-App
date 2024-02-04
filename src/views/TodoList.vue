@@ -2,7 +2,7 @@
   <v-container class="parent">
     <v-row>
       <!-- Head -->
-      <v-col cols="12 d-flex align-center justify-space-between pb-6">
+      <v-col cols="12 d-flex align-center justify-space-between">
         <div
           color-scheme="isDark ? 'dark' : 'light'"
           class="title"
@@ -17,7 +17,7 @@
         </div>
         <svg
           style="cursor: pointer; z-index: 1"
-          @click="share"
+          @click="emit"
           xmlns="http://www.w3.org/2000/svg"
           width="26"
           height="26"
@@ -56,6 +56,7 @@
               <v-btn
                 v-show="todosObj.task"
                 icon="mdi-plus-circle"
+                style="color: var(--color-bg-col)"
                 variant="text"
                 @click="addTodo"
               ></v-btn>
@@ -67,57 +68,59 @@
       <!-- Todos List -->
 
       <v-card
-        class="todosBox w-100 ma-3"
+        class="todosBox w-100 ma-3 d-flex"
         elevation="4"
-        style="background: transparent; max-height: 400px"
+        :style="`background: var(--color-bg-col);${
+          todosArr.length ? 'height:390px' : 'height: 60px'
+        }`"
       >
-        <v-col cols="12" class="pa-0">
-          <draggable v-model="filteredItems" item-key="index" tag="v-card">
-            <template #item="{ element: todo }">
-              <v-card rounded="0" color="var(--color-bg-col)">
-                <div
-                  class="d-flex align-center justify-space-between px-4 py-3"
-                >
-                  <div class="d-flex align-center py-3">
-                    <!-- <input
-                      @click="endTodo(todo)"
-                      :checked="todo.status"
-                      type="checkbox"
-                      style="width: 20px; height: 20px"
-                    /> -->
-                    <v-checkbox-btn
-                      @click.prevent="endTodo(todo)"
-                      v-model="todo.status"
-                      style="color: #c2c2c2"
-                    ></v-checkbox-btn>
+        <v-col
+          v-if="todosArr.length"
+          cols="12"
+          class="list pa-0"
+          style="max-height: 324px"
+        >
+          <v-scroll-x-transition class="py-0" group tag="v-list">
+            <template v-for="todo in filteredItems" :key="todo.id">
+              <v-list-item class="py-3">
+                <template v-slot:prepend>
+                  <v-checkbox-btn
+                    @click.prevent="endTodo(todo)"
+                    v-model="todo.status"
+                    style="color: #c2c2c2"
+                  ></v-checkbox-btn>
+                </template>
 
-                    <span
-                      class="pl-4"
-                      style="font-size: 20px; color: var(--color-ttl)"
-                      :style="`${
-                        todo.status ? 'text-decoration: line-through' : ''
-                      }`"
-                    >
-                      {{ todo.task }}
-                    </span>
-                  </div>
+                <v-list-item-title>
+                  <span
+                    class="pl-4"
+                    style="font-size: 20px; color: var(--color-ttl)"
+                    :style="`${
+                      todo.status ? 'text-decoration: line-through' : ''
+                    }`"
+                  >
+                    {{ todo.task }}
+                  </span>
+                </v-list-item-title>
 
+                <template v-slot:append>
                   <v-icon
                     style="color: aliceblue"
-                    @click="deleteTodo(todo.id)"
+                    @click.prevent="deleteTodo(todo.id)"
                     >mdi-close</v-icon
                   >
-                </div>
+                </template>
+              </v-list-item>
 
-                <v-divider style="color: var(--color-ttl)"> </v-divider>
-              </v-card>
+              <v-divider style="color: var(--color-ttl)"></v-divider>
             </template>
-          </draggable>
+          </v-scroll-x-transition>
         </v-col>
 
         <!-- Footer -->
 
         <v-card
+          style="position: absolute; bottom: 0; left: 0; width: 100%"
           elevation="0"
           rounded="0"
           color="var(--color-bg-col)"
@@ -171,8 +174,6 @@ import { ref, watch, defineEmits } from "vue";
 
 import todoList from "../mixing/todo";
 
-import draggable from "vuedraggable";
-
 const { todosArr, addToLocalSt, isDarkTheme, updateTheme } = todoList();
 
 const radioFilter = ref("");
@@ -181,7 +182,7 @@ const radioFilter = ref("");
 
 const Emit = defineEmits(["HandelTheme"]);
 
-const share = () => {
+const emit = () => {
   updateTheme();
 
   Emit("HandelTheme", isDarkTheme.value);
@@ -199,7 +200,7 @@ const todosObj = ref({
 
 // Add Todo
 const addTodo = () => {
-  if (todosObj.value.task != "") {
+  if (todosObj.value.task != null) {
     todosObj.value.id = todosArr.value.length + 1;
 
     todosObj.value.status = false;
@@ -310,16 +311,16 @@ const clear = () => {
   cursor: pointer;
   color: #1ba0ff;
 }
-.todosBox {
+.list {
   overflow-y: scroll;
 }
-.todosBox::-webkit-scrollbar {
+.list::-webkit-scrollbar {
   width: 4px;
 }
-.todosBox::-webkit-scrollbar-track {
+.list::-webkit-scrollbar-track {
   background-color: #a9a9a9;
 }
-.todosBox::-webkit-scrollbar-thumb {
+.list::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 6px var(--color-bg-col);
 }
 </style>
