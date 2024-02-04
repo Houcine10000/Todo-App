@@ -1,10 +1,16 @@
 <template>
   <main>
-    <div class="img" v-for="(item, index) in isDark" :key="index">
-      <img v-if="item == 'light'" src="./assets/bg-desktop-light.jpg" alt="" />
+    <transition-group name="fade" tag="div">
+      <div class="fade-in-image" v-for="(item, index) in isDark" :key="index">
+        <img
+          v-if="item == 'light'"
+          key="light"
+          src="./assets/bg-desktop-light.jpg"
+        />
+        <img v-else key="dark" src="./assets/bg-desktop-dark.jpg" />
+      </div>
+    </transition-group>
 
-      <img v-else src="./assets/bg-desktop-dark.jpg" alt="" />
-    </div>
     <!-- <router-view /> -->
     <todoList @-handel-theme="upTheme" />
   </main>
@@ -47,15 +53,25 @@ onMounted(() => {
   --color-bg-col: #25273c;
 }
 
+.fade-in-image img {
+  min-width: 100%;
+  position: absolute;
+}
+
 main {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--color-bg);
   transition: all 0.3s;
 }
-img {
-  min-width: 100%;
-  position: absolute;
+
+/* Define the transition classes */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

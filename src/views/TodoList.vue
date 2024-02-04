@@ -6,12 +6,17 @@
         <div
           color-scheme="isDark ? 'dark' : 'light'"
           class="title"
-          style="font-size: 36px; letter-spacing: 10px; font-weight: 700"
+          style="
+            font-size: 36px;
+            z-index: 1;
+            letter-spacing: 10px;
+            font-weight: 700;
+          "
         >
           TODO
         </div>
         <svg
-          style="cursor: pointer"
+          style="cursor: pointer; z-index: 1"
           @click="share"
           xmlns="http://www.w3.org/2000/svg"
           width="26"
@@ -37,7 +42,7 @@
 
       <v-col cols="12 d-flex align-center">
         <v-text-field
-          @keyup.enter="addTodo"
+          @keydown.enter="addTodo"
           v-model="todosObj.task"
           bg-color="var(--color-ttl)"
           variant="solo"
@@ -46,6 +51,16 @@
           single-line
           hide-details
         >
+          <template v-slot:append-inner>
+            <v-fade-transition>
+              <v-btn
+                v-show="todosObj.task"
+                icon="mdi-plus-circle"
+                variant="text"
+                @click="addTodo"
+              ></v-btn>
+            </v-fade-transition>
+          </template>
         </v-text-field>
       </v-col>
 
@@ -64,12 +79,17 @@
                   class="d-flex align-center justify-space-between px-4 py-3"
                 >
                   <div class="d-flex align-center py-3">
-                    <input
+                    <!-- <input
                       @click="endTodo(todo)"
                       :checked="todo.status"
                       type="checkbox"
                       style="width: 20px; height: 20px"
-                    />
+                    /> -->
+                    <v-checkbox-btn
+                      @click.prevent="endTodo(todo)"
+                      v-model="todo.status"
+                      style="color: #c2c2c2"
+                    ></v-checkbox-btn>
 
                     <span
                       class="pl-4"
@@ -83,7 +103,7 @@
                   </div>
 
                   <v-icon
-                    style="color: var(--color-ttl)"
+                    style="color: aliceblue"
                     @click="deleteTodo(todo.id)"
                     >mdi-close</v-icon
                   >
@@ -101,7 +121,7 @@
           elevation="0"
           rounded="0"
           color="var(--color-bg-col)"
-          class="py-3 d-flex align-center justify-space-around"
+          class="py-4 d-flex align-center justify-space-around"
         >
           <div style="color: var(--color-txt)">
             <span>{{ todosArr.length }}</span> items left
@@ -171,7 +191,7 @@ const share = () => {
 
 const todosObj = ref({
   id: "",
-  task: "",
+  task: null,
   status: "",
 });
 
@@ -189,31 +209,30 @@ const addTodo = () => {
     addToLocalSt();
 
     todosObj.value = {
-      task: "",
+      task: null,
     };
   }
 };
 
-//--Delete Todo
-const deleteTodo = (element) => {
+//--Delete Todo from mainArray
+const delTodoArr = (id) => {
+  todosArr.value.forEach((ele) => {
+    ele.id === id ? todosArr.value.splice(todosArr.value.indexOf(ele), 1) : "";
+  });
+};
+
+//--Delete Todo from filteredArray
+const deleteTodo = (id) => {
   if (radioFilter.value === "Active" || radioFilter.value === "Completed") {
     filteredItems.value.forEach((ele) => {
-      ele.id === element
+      ele.id === id
         ? filteredItems.value.splice(filteredItems.value.indexOf(ele), 1)
         : "";
     });
 
-    todosArr.value.forEach((ele) => {
-      ele.id === element
-        ? todosArr.value.splice(todosArr.value.indexOf(ele), 1)
-        : "";
-    });
+    delTodoArr(id);
   } else {
-    todosArr.value.forEach((ele) => {
-      ele.id === element
-        ? todosArr.value.splice(todosArr.value.indexOf(ele), 1)
-        : "";
-    });
+    delTodoArr(id);
   }
 
   addToLocalSt();
@@ -274,11 +293,7 @@ const clear = () => {
 }
 .parent {
   width: 600px;
-  height: 600px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -55%);
+  padding-top: 90px;
 }
 .parent >>> .v-card__underlay {
   display: none;
