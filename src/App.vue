@@ -3,12 +3,24 @@
     <transition-group name="fade" tag="div">
       <div class="fade-in-image" v-for="(item, index) in isDark" :key="index">
         <img
-          v-if="item == 'light'"
+          v-if="item == 'light' && screenWidth > 599"
           key="light"
           src="./assets/bg-desktop-light.jpg"
         />
-        <img v-else key="dark" src="./assets/bg-desktop-dark.jpg" />
-      </div>
+        <img
+          v-else-if="item == 'dark' && screenWidth > 599"
+          src="./assets/bg-desktop-dark.jpg"
+        />
+
+        <img
+          v-if="item == 'light' && screenWidth <= 599"
+          key="light"
+          src="./assets/bg-mobile-light.jpg"
+        />
+        <img
+          v-else-if="item == 'dark' && screenWidth <= 599"
+          src="./assets/bg-mobile-dark.jpg"
+        />      </div>
     </transition-group>
 
     <!-- <router-view /> -->
@@ -27,8 +39,23 @@ const upTheme = (theme) => {
   isDark.value.push(theme);
 };
 
+const screenWidth = ref(0);
+
+const onScreenResize = () => {
+  window.addEventListener("resize", () => {
+    updateScreenWidth();
+  });
+};
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
 onMounted(() => {
   isDark.value.push(localStorage.getItem("theme"));
+
+  updateScreenWidth();
+  onScreenResize();
 });
 </script>
 
@@ -53,15 +80,20 @@ onMounted(() => {
   --color-bg-col: #25273c;
 }
 
-.fade-in-image img {
-  min-width: 100%;
-  position: absolute;
+body {
+  background: var(--color-bg);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-main {
-  height: 100vh;
-  background-color: var(--color-bg);
-  transition: all 0.3s;
+.fade-in-image img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
 }
 
 /* Define the transition classes */

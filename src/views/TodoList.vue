@@ -2,16 +2,10 @@
   <v-container class="parent">
     <v-row>
       <!-- Head -->
-      <v-col cols="12 d-flex align-center justify-space-between">
+      <v-col cols="12" class="d-flex align-center justify-space-between">
         <div
-          color-scheme="isDark ? 'dark' : 'light'"
-          class="title"
-          style="
-            font-size: 36px;
-            z-index: 1;
-            letter-spacing: 10px;
-            font-weight: 700;
-          "
+          class="title font-weight-bold"
+          style="z-index: 1; letter-spacing: 10px"
         >
           TODO
         </div>
@@ -124,14 +118,14 @@
           elevation="0"
           rounded="0"
           color="var(--color-bg-col)"
-          class="py-4 d-flex align-center justify-space-around"
+          class="footer py- d-flex align-center justify-space-between"
         >
           <div style="color: var(--color-txt)">
             <span>{{ todosArr.length }}</span> items left
           </div>
 
-          <div style="color: var(--color-txt)" class="sortBy">
-            <label style="cursor: pointer">
+          <div style="color: var(--color-txt)">
+            <label style="cursor: pointer" class="sortBy">
               <input
                 type="radio"
                 name="show"
@@ -142,12 +136,12 @@
               <span>All</span>
             </label>
 
-            <label style="cursor: pointer" class="px-3">
+            <label style="cursor: pointer" class="px-3 sortBy">
               <input type="radio" name="show" value="Active" @change="filter" />
               <span>Active</span>
             </label>
 
-            <label style="cursor: pointer">
+            <label style="cursor: pointer" class="sortBy">
               <input
                 type="radio"
                 name="show"
@@ -291,6 +285,7 @@ const clear = () => {
 <style scoped>
 .title {
   color: var(--color-ttl);
+  font-size: 34px;
 }
 .parent {
   width: 600px;
@@ -299,17 +294,12 @@ const clear = () => {
 .parent >>> .v-card__underlay {
   display: none;
 }
-.c1:hover {
+.sortBy:hover {
   cursor: pointer;
   color: #1ba0ff;
 }
-.c2:hover {
-  cursor: pointer;
-  color: #1ba0ff;
-}
-.c3:hover {
-  cursor: pointer;
-  color: #1ba0ff;
+.footer {
+  padding: 20px 5px;
 }
 .list {
   overflow-y: scroll;
@@ -322,5 +312,36 @@ const clear = () => {
 }
 .list::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 6px var(--color-bg-col);
+}
+
+@media (max-width: 959px) {
+  .parent {
+    width: 500px;
+    transition: 0.2s ease-in-out;
+  }
+  .title {
+    font-size: 26px;
+  }
+}
+@media (max-width: 599px) {
+  .parent {
+    width: 460px;
+    transition: 0.2s ease-in-out;
+  }
+  .title {
+    font-size: 22px;
+  }
+}
+@media (max-width: 459px) {
+  .parent {
+    width: 400px;
+    transition: 0.2s ease-in-out;
+  }
+  .title {
+    font-size: 22px;
+  }
+  .footer {
+    padding: 5px 5px;
+  }
 }
 </style>
